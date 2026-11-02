@@ -7,7 +7,7 @@ Stack: **Next.js 14 (App Router) + Tailwind + Firebase Firestore**. Free-tier de
 
 | Route | Purpose |
 |---|---|
-| `/` | Public registration form (Arabic-name + Egyptian-phone validation, duplicate-phone guard → `/ticket/[id]`) |
+| `/` | Public registration form (Arabic-name + Egyptian-phone validation, seat dropdown hiding booked seats, duplicate-phone guard → `/ticket/[id]`) |
 | `/ticket/[id]` | QR ticket (QR = raw `attendeeId`), QR PNG / full-ticket PNG / print |
 | `/admin/scan` | Live webcam scanner (`html5-qrcode`) + manual search fallback |
 | `/admin/dashboard` | Real-time counts, attendee table, CSV export, undo/delete |
@@ -37,7 +37,7 @@ Stack: **Next.js 14 (App Router) + Tailwind + Firebase Firestore**. Free-tier de
 
 ## Firestore schema
 
-Collection `attendees`, document ID = `attendeeId`:
+Collection `theater_attendees`, document ID = `attendeeId`:
 
 ```json
 {
@@ -45,8 +45,7 @@ Collection `attendees`, document ID = `attendeeId`:
   "name": "بولا صلاح فتحي",
   "email": "",
   "phone": "010xxxxxxxx",
-  "age": 60,
-  "organization": "مصر الجديدة",
+  "seat": "A1",
   "checkedIn": false,
   "checkedInAt": null,
   "createdAt": "Timestamp"
@@ -55,6 +54,15 @@ Collection `attendees`, document ID = `attendeeId`:
 
 > `email` is kept as `""` for backward compatibility with older records.
 > `phone` is stored normalized (digits only, `01xxxxxxxxx`) and is unique.
+> `seat` is the booked theater seat (e.g. `"A1"`). Booked seats are hidden from
+> the registration dropdown once they exist in this collection.
+
+## Event info
+
+- Event: مسرحية "عملت ايه فينا السنين؟"
+- Date: الخميس 19 نوفمبر 2026
+- Time: 6:00 مساءً
+- Venue: مسرح سان جورج للأقباط الكاثوليك - مصر الجديدة | St. Georges Coptic Catholic Theater - Heliopolis
 
 ## Optional: admin passcodes (separate roles)
 

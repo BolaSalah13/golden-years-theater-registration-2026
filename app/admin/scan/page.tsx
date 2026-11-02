@@ -26,7 +26,7 @@ import {
 } from "lucide-react";
 import { db } from "@/lib/firebase";
 import AdminGate, { scannerCode } from "@/components/AdminGate";
-import { ATTENDEES_COLLECTION, type Attendee } from "@/lib/types";
+import { THEATER_ATTENDEES_COLLECTION, type Attendee } from "@/lib/types";
 import { extractAttendeeId, formatTimestamp } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 
@@ -137,7 +137,7 @@ export default function ScanPage() {
       return;
     }
     try {
-      const ref = doc(db, ATTENDEES_COLLECTION, id);
+      const ref = doc(db, THEATER_ATTENDEES_COLLECTION, id);
       const snap = await getDoc(ref);
       if (!snap.exists()) {
         setResult({ kind: "error", message: `Invalid QR Code — no attendee found for ID “${id}”.` });
@@ -237,10 +237,10 @@ export default function ScanPage() {
     }
     setManualBusy(true);
     try {
-      const col = collection(db, ATTENDEES_COLLECTION);
+      const col = collection(db, THEATER_ATTENDEES_COLLECTION);
       // 1) Direct ID lookup.
       if (!q.includes("@") && !q.includes(" ") && q.length >= 6) {
-        const byId = await getDoc(doc(db, ATTENDEES_COLLECTION, q));
+        const byId = await getDoc(doc(db, THEATER_ATTENDEES_COLLECTION, q));
         if (byId.exists()) {
           setManualHits([{ ...(byId.data() as Attendee), id: byId.id }]);
           setManualBusy(false);
@@ -434,7 +434,7 @@ export default function ScanPage() {
                   </p>
                   <p className="mt-1 text-xl font-bold">{result.attendee.name}</p>
                   <p className="text-sm opacity-80">
-                    {[result.attendee.organization, result.attendee.email]
+                    {[result.attendee.seat, result.attendee.email]
                       .filter(Boolean)
                       .join(" • ")}
                   </p>
@@ -509,7 +509,7 @@ export default function ScanPage() {
                   <div className="min-w-0">
                     <p className="truncate text-sm font-semibold">{a.name}</p>
                     <p className="truncate text-xs text-slate-500">
-                      {[a.email, a.organization].filter(Boolean).join(" • ")}
+                      {[a.email, a.seat].filter(Boolean).join(" • ")}
                     </p>
                     <p className="truncate text-xs text-slate-500" dir="ltr">
                       {a.phone}

@@ -5,11 +5,11 @@ export interface Attendee {
   name: string;
   email: string;
   phone: string;
-  organization: string;
-  age: number | null;
+  seat: string;
   checkedIn: boolean;
   checkedInAt: Timestamp | null;
   createdAt: Timestamp | null;
 }
 
-export const ATTENDEES_COLLECTION = "attendees";
+/** Firestore collection for theater seat bookings (renamed from `attendees`). */
+export const THEATER_ATTENDEES_COLLECTION = "theater_attendees";

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   collection,
@@ -16,51 +16,38 @@ import {
   AlertCircle,
   CalendarDays,
   CheckCircle2,
+  Clock,
   Loader2,
   MapPin,
   Ticket,
 } from "lucide-react";
 import { db } from "@/lib/firebase";
-import { ATTENDEES_COLLECTION } from "@/lib/types";
+import { THEATER_ATTENDEES_COLLECTION, type Attendee } from "@/lib/types";
+import { getAllSeats } from "@/lib/utils";
 import { LogoBanner } from "@/components/Logo";
 import { cn } from "@/lib/utils";
 
 const EVENT_NAME =
-  process.env.NEXT_PUBLIC_EVENT_NAME ?? "Golden Years Safir Hotel Event";
+  process.env.NEXT_PUBLIC_EVENT_NAME ?? "عملت ايه فينا السنين؟";
 const EVENT_DATE =
-  process.env.NEXT_PUBLIC_EVENT_DATE ?? "Tuesday, October 13 • 11:00 AM";
+  process.env.NEXT_PUBLIC_EVENT_DATE ?? "الخميس 19 نوفمبر 2026";
+const EVENT_TIME = process.env.NEXT_PUBLIC_EVENT_TIME ?? "6:00 مساءً";
 const EVENT_VENUE =
-  process.env.NEXT_PUBLIC_EVENT_VENUE ?? "Safir Hotel";
+  process.env.NEXT_PUBLIC_EVENT_VENUE ??
+  "مسرح سان جورج للأقباط الكاثوليك - مصر الجديدة | St. Georges Coptic Catholic Theater - Heliopolis";
 
-const BRANCHES = [
-  "مصر الجديدة",
-  "المهندسين",
-  "شرق القاهرة",
-  "التجمع الجديد",
-  "امبابة و الوراق و الكيت كات",
-  "6 أكتوبر/ مدينة زايد وشماليات أكتوبر",
-  "مدينه نصر",
-  "مدينتي / الرحاب",
-  "المعادي",
-  "حدائق أكتوبر و حدائق الأهرام",
-  "الشروق و المستقبل",
-  "فيصل و الهرم",
-  "الاسكندرية",
-  "المنصورة",
-];
+const SEATS = getAllSeats();
 
 interface FormState {
   name: string;
   phone: string;
-  age: string;
-  organization: string;
+  seat: string;
 }
 
 const initialForm: FormState = {
   name: "",
   phone: "",
-  age: "",
-  organization: "",
+  seat: "",
 };
 
 const ARABIC_LETTER = /[\u0621-\u064A\u0670-\u06D3\u06FA-\u06FC]/;
@@ -93,19 +80,9 @@ function validate(form: FormState): Partial<Record<keyof FormState, string>> {
     errors.phone =
       "Please enter a valid 11-digit Egyptian mobile number (01xxxxxxxxx).";
   }
-  const ageRaw = form.age.trim();
-  if (/[٠-٩۰-۹]/.test(ageRaw)) {
-    errors.age =
-      "Please use English digits for age (اكتب السن بأرقام إنجليزية).";
-  } else if (
-    !/^\d{1,3}$/.test(ageRaw) ||
-    Number(ageRaw) < 1 ||
-    Number(ageRaw) > 120
-  ) {
-    errors.age = "Please enter a valid age (1–120).";
+  if (!form.seat) {
+    errors.seat = "Please choose your seat from the list.";
   }
-  if (!BRANCHES.includes(form.organization.trim()))
-    errors.organization = "Please choose your branch from the list.";
   return errors;
 }
 
@@ -118,6 +95,29 @@ export default function RegistrationPage() {
     | { kind: "submitting" }
     | { kind: "error"; message: string; existingId?: string }
   >({ kind: "idle" });
+
+  // Seats already booked by previous registrations in theater_attendees.
+  const [bookedSeats, setBookedSeats] = useState<string[]>([]);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function loadBookedSeats() {
+      try {
+        const snap = await getDocs(collection(db, THEATER_ATTENDEES_COLLECTION));
+        if (cancelled) return;
+        const taken = snap.docs
+          .map((d) => (d.data() as Attendee).seat)
+          .filter((s): s is string => Boolean(s && s.trim()));
+        setBookedSeats(Array.from(new Set(taken)));
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    void loadBookedSeats();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   function set<K extends keyof FormState>(key: K, value: string) {
     setForm((f) => ({ ...f, [key]: value }));
@@ -135,8 +135,7 @@ export default function RegistrationPage() {
     const name = form.name.trim();
     // Normalized: digits only, +20/0020/20 → leading 0 (e.g. 010xxxxxxxx).
     const phone = normalizePhone(form.phone);
-    const age = Number(form.age.trim());
-    const organization = form.organization.trim();
+    const seat = form.seat;
 
     try {
       if (!navigator.onLine) {
@@ -145,7 +144,7 @@ export default function RegistrationPage() {
         );
       }
 
-      const col = collection(db, ATTENDEES_COLLECTION);
+      const col = collection(db, THEATER_ATTENDEES_COLLECTION);
 
       // No duplicate phone numbers: one registration per phone.
       const dup = await getDocs(
@@ -162,6 +161,19 @@ export default function RegistrationPage() {
         return;
       }
 
+      // The chosen seat must still be free.
+      const seatSnap = await getDocs(
+        query(col, where("seat", "==", seat), limit(1))
+      );
+      if (!seatSnap.empty) {
+        setStatus({
+          kind: "error",
+          message:
+            "هذا المقعد محجوز بالفعل، يرجى اختيار مقعد متاح من القائمة.",
+        });
+        return;
+      }
+
       // Generate a unique attendeeId (Firestore doc ID) and store it in `id`.
       const ref = doc(col);
       await setDoc(ref, {
@@ -169,8 +181,7 @@ export default function RegistrationPage() {
         name,
         email: "",
         phone,
-        age,
-        organization,
+        seat,
         checkedIn: false,
         checkedInAt: null,
         createdAt: serverTimestamp(),
@@ -194,6 +205,7 @@ export default function RegistrationPage() {
   }
 
   const submitting = status.kind === "submitting";
+  const availableSeats = SEATS.filter((s) => !bookedSeats.includes(s));
 
   return (
     <div className="grid gap-8 md:grid-cols-5">
@@ -205,12 +217,13 @@ export default function RegistrationPage() {
             <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-[#e3b34e]">
               <Ticket className="h-4 w-4" /> Free Registration
             </div>
-            <h1 className="mt-3 text-3xl font-bold leading-tight">
-              {EVENT_NAME}
-            </h1>
+            <h1 className="mt-3 text-3xl font-bold leading-tight">{EVENT_NAME}</h1>
             <div className="mt-4 space-y-2 text-sm text-white/90">
               <p className="flex items-center gap-2">
                 <CalendarDays className="h-4 w-4" /> {EVENT_DATE}
+              </p>
+              <p className="flex items-center gap-2">
+                <Clock className="h-4 w-4" /> {EVENT_TIME}
               </p>
               <p className="flex items-center gap-2">
                 <MapPin className="h-4 w-4" /> {EVENT_VENUE}
@@ -331,63 +344,37 @@ export default function RegistrationPage() {
             </div>
 
             <div>
-              <label htmlFor="age" className="text-sm font-medium">
-                Age (السن) *
-              </label>
-              <input
-                id="age"
-                type="text"
-                inputMode="numeric"
-                dir="ltr"
-                autoComplete="off"
-                placeholder="60"
-                value={form.age}
-                onChange={(e) => set("age", e.target.value)}
-                className={cn(
-                  "mt-1 w-full rounded-xl border px-3 py-2.5 text-sm outline-none transition focus:ring-2",
-                  errors.age
-                    ? "border-red-400 focus:ring-red-100"
-                    : "border-slate-300 focus:border-slate-900 focus:ring-slate-200"
-                )}
-              />
-              {errors.age && (
-                <p className="mt-1 text-xs text-red-600">{errors.age}</p>
-              )}
-              {!errors.age && (
-                <p className="mt-1 text-xs text-slate-400">
-                  English digits only (أرقام إنجليزية فقط)
-                </p>
-              )}
-            </div>
-
-            <div className="sm:col-span-2">
-              <label htmlFor="organization" className="text-sm font-medium">
-                Area (المنطقة) *
+              <label htmlFor="seat" className="text-sm font-medium">
+                Seat Number (رقم المقعد) *
               </label>
               <select
-                id="organization"
-                value={form.organization}
-                onChange={(e) => set("organization", e.target.value)}
+                id="seat"
+                required
+                value={form.seat}
+                onChange={(e) => set("seat", e.target.value)}
                 className={cn(
                   "mt-1 w-full rounded-xl border bg-white px-3 py-2.5 text-sm text-black outline-none transition focus:ring-2 [&>option]:text-black",
-                  errors.organization
+                  errors.seat
                     ? "border-red-400 focus:ring-red-100"
                     : "border-slate-300 focus:border-slate-900 focus:ring-slate-200",
-                  !form.organization && "text-slate-400"
+                  !form.seat && "text-slate-400"
                 )}
               >
                 <option value="" disabled>
-                  اختار المنطقة…
+                  اختار المقعد…
                 </option>
-                {BRANCHES.map((b) => (
-                  <option key={b} value={b}>
-                    {b}
+                {availableSeats.map((s) => (
+                  <option key={s} value={s}>
+                    {s}
                   </option>
                 ))}
               </select>
-              {errors.organization && (
-                <p className="mt-1 text-xs text-red-600">
-                  {errors.organization}
+              {errors.seat && (
+                <p className="mt-1 text-xs text-red-600">{errors.seat}</p>
+              )}
+              {!errors.seat && (
+                <p className="mt-1 text-xs text-slate-400">
+                  Available seats only — already booked seats are hidden (المقاعد المحجوزة مخفاة)
                 </p>
               )}
             </div>

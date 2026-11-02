@@ -7,7 +7,7 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 const eventName =
-  process.env.NEXT_PUBLIC_EVENT_NAME ?? "Golden Years Safir Hotel Event";
+  process.env.NEXT_PUBLIC_EVENT_NAME ?? "عملت ايه فينا السنين؟";
 
 export const metadata: Metadata = {
   title: {
@@ -50,8 +50,7 @@ export default function RootLayout({
         </main>
         <footer className="no-print border-t border-slate-200 bg-white">
           <div className="mx-auto max-w-5xl px-4 py-4 text-center text-xs text-slate-500">
-            Free-tier stack: Next.js on Vercel + Firebase Firestore. QR Codes
-            contain only the attendee ID.
+            Developed by Bola Salah | تم التطوير بواسطة بولا صلاح
           </div>
         </footer>
         {/* Fixed credit badge — always visible on every page, even while scrolling */}

@@ -43,3 +43,23 @@ export function csvEscape(value: unknown): string {
   const s = value === null || value === undefined ? "" : String(value);
   return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
 }
+
+/**
+ * All bookable seat labels for the theater.
+ * Rows A–L hold seats 1–14 each, rows M–R hold seats 1–5 each.
+ * Example labels: A1 … A14, B1 … B14, … L1 … L14, M1 … M5, … R1 … R5.
+ */
+export function getAllSeats(): string[] {
+  const seats: string[] = [];
+  // Rows A -> L (12 rows) with 14 seats per row.
+  for (let i = 0; i < 12; i++) {
+    const row = String.fromCharCode(65 + i);
+    for (let n = 1; n <= 14; n++) seats.push(`${row}${n}`);
+  }
+  // Rows M -> R (6 rows) with 5 seats per row.
+  for (let i = 0; i < 6; i++) {
+    const row = String.fromCharCode(77 + i);
+    for (let n = 1; n <= 5; n++) seats.push(`${row}${n}`);
+  }
+  return seats;
+}

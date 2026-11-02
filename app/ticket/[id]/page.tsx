@@ -14,16 +14,18 @@ import {
   QrCode,
 } from "lucide-react";
 import { db } from "@/lib/firebase";
-import { ATTENDEES_COLLECTION, type Attendee } from "@/lib/types";
+import { THEATER_ATTENDEES_COLLECTION, type Attendee } from "@/lib/types";
 import { LogoMark } from "@/components/Logo";
 import { formatTimestamp } from "@/lib/utils";
 
 const EVENT_NAME =
-  process.env.NEXT_PUBLIC_EVENT_NAME ?? "Golden Years Safir Hotel Event";
+  process.env.NEXT_PUBLIC_EVENT_NAME ?? "عملت ايه فينا السنين؟";
 const EVENT_DATE =
-  process.env.NEXT_PUBLIC_EVENT_DATE ?? "Tuesday, October 13 • 11:00 AM";
+  process.env.NEXT_PUBLIC_EVENT_DATE ?? "الخميس 19 نوفمبر 2026";
+const EVENT_TIME = process.env.NEXT_PUBLIC_EVENT_TIME ?? "6:00 مساءً";
 const EVENT_VENUE =
-  process.env.NEXT_PUBLIC_EVENT_VENUE ?? "Safir Hotel";
+  process.env.NEXT_PUBLIC_EVENT_VENUE ??
+  "مسرح سان جورج للأقباط الكاثوليك - مصر الجديدة | St. Georges Coptic Catholic Theater - Heliopolis";
 
 export default function TicketPage() {
   const params = useParams<{ id: string }>();
@@ -45,7 +47,7 @@ export default function TicketPage() {
     }
     setState("loading");
     try {
-      const snap = await getDoc(doc(db, ATTENDEES_COLLECTION, id));
+      const snap = await getDoc(doc(db, THEATER_ATTENDEES_COLLECTION, id));
       if (!snap.exists()) {
         setState("not-found");
         return;
@@ -111,12 +113,13 @@ export default function TicketPage() {
     ctx.fillText(attendee.name.slice(0, 26), 90, 195);
     ctx.font = "24px system-ui, sans-serif";
     ctx.fillStyle = "#475569";
-    ctx.fillText(attendee.organization.slice(0, 44), 90, 240);
+    ctx.fillText(attendee.seat.slice(0, 10), 90, 240);
     ctx.fillText(attendee.phone.slice(0, 60), 90, 278);
     ctx.font = "22px system-ui, sans-serif";
     ctx.fillStyle = "#334155";
     ctx.fillText(`${EVENT_DATE}`, 90, 330);
     ctx.fillText(`${EVENT_VENUE}`, 90, 362);
+    ctx.fillText(`${EVENT_TIME}`, 90, 384);
     ctx.font = "bold 20px monospace";
     ctx.fillStyle = "#111827";
     ctx.fillText(`ID: ${attendee.id}`, 90, 430);
@@ -228,6 +231,7 @@ export default function TicketPage() {
               </p>
               <h1 className="mt-0.5 text-2xl font-bold">{EVENT_NAME}</h1>
               <p className="mt-0.5 text-sm text-white/70">{EVENT_VENUE}</p>
+              <p className="mt-0.5 text-sm text-white/70">{EVENT_TIME}</p>
             </div>
           </div>
         </div>
@@ -237,15 +241,11 @@ export default function TicketPage() {
               Attendee
             </p>
             <p className="mt-1 text-2xl font-bold">{attendee.name}</p>
-            <p className="text-sm text-slate-500">{attendee.organization}</p>
+            <p className="text-sm text-slate-500">{attendee.seat}</p>
             <dl className="mt-4 space-y-1.5 text-sm">
               <div className="flex gap-2">
                 <dt className="w-14 shrink-0 text-slate-400">Phone</dt>
                 <dd>{attendee.phone}</dd>
-              </div>
-              <div className="flex gap-2">
-                <dt className="w-14 shrink-0 text-slate-400">Age</dt>
-                <dd>{attendee.age ?? "—"}</dd>
               </div>
               <div className="flex gap-2">
                 <dt className="w-14 shrink-0 text-slate-400">ID</dt>

@@ -26,22 +26,21 @@ import {
 } from "lucide-react";
 import { db } from "@/lib/firebase";
 import AdminGate, { dashboardCode } from "@/components/AdminGate";
-import { ATTENDEES_COLLECTION, type Attendee } from "@/lib/types";
+import { THEATER_ATTENDEES_COLLECTION, type Attendee } from "@/lib/types";
 import { csvEscape, formatTimestamp } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 
 type StatusFilter = "all" | "checked-in" | "pending";
 
 function toCsv(rows: Attendee[]): string {
-  const header = ["id", "name", "email", "phone", "age", "organization", "checkedIn", "checkedInAt", "createdAt"];
+  const header = ["id", "name", "email", "phone", "seat", "checkedIn", "checkedInAt", "createdAt"];
   const lines = rows.map((a) =>
     [
       a.id,
       a.name,
       a.email,
       a.phone,
-      a.age ?? "",
-      a.organization,
+      a.seat,
       a.checkedIn ? "TRUE" : "FALSE",
       a.checkedInAt && typeof (a.checkedInAt as unknown as { toDate?: () => Date }).toDate === "function"
         ? (a.checkedInAt as unknown as { toDate: () => Date }).toDate().toISOString()
@@ -67,7 +66,7 @@ export default function DashboardPage() {
   useEffect(() => {
     setLoading(true);
     setError("");
-    const q = query(collection(db, ATTENDEES_COLLECTION), orderBy("createdAt", "desc"));
+    const q = query(collection(db, THEATER_ATTENDEES_COLLECTION), orderBy("createdAt", "desc"));
     const unsub = onSnapshot(
       q,
       (snap) => {
@@ -79,7 +78,7 @@ export default function DashboardPage() {
         // orderBy fails on docs missing createdAt or without index in rare cases — fall back to unordered.
         if (/order|index/i.test(err.message)) {
           const fallback = onSnapshot(
-            collection(db, ATTENDEES_COLLECTION),
+            collection(db, THEATER_ATTENDEES_COLLECTION),
             (snap) => {
               setAttendees(snap.docs.map((d) => ({ ...(d.data() as Attendee), id: d.id })));
               setLoading(false);
@@ -117,7 +116,7 @@ export default function DashboardPage() {
       return (
         a.name.toLowerCase().includes(s) ||
         a.email.toLowerCase().includes(s) ||
-        a.organization.toLowerCase().includes(s) ||
+        a.seat.toLowerCase().includes(s) ||
         a.id.toLowerCase().includes(s)
       );
     });
@@ -130,7 +129,7 @@ export default function DashboardPage() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `attendees-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.download = `theater_attendees-${new Date().toISOString().slice(0, 10)}.csv`;
     a.click();
     URL.revokeObjectURL(url);
   }
@@ -138,7 +137,7 @@ export default function DashboardPage() {
   async function toggleCheckIn(a: Attendee) {
     setBusyId(a.id);
     try {
-      await updateDoc(doc(db, ATTENDEES_COLLECTION, a.id), {
+      await updateDoc(doc(db, THEATER_ATTENDEES_COLLECTION, a.id), {
         checkedIn: !a.checkedIn,
         checkedInAt: !a.checkedIn ? serverTimestamp() : null,
       });
@@ -154,7 +153,7 @@ export default function DashboardPage() {
     if (!confirm(`Delete registration for ${a.name} (${a.email})? This cannot be undone.`)) return;
     setBusyId(a.id);
     try {
-      await deleteDoc(doc(db, ATTENDEES_COLLECTION, a.id));
+      await deleteDoc(doc(db, THEATER_ATTENDEES_COLLECTION, a.id));
     } catch (e) {
       console.error(e);
       alert(e instanceof Error ? e.message : "Delete failed.");
@@ -241,7 +240,7 @@ export default function DashboardPage() {
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search name, email, org, or ID…"
+              placeholder="Search name, email, seat, or ID…"
               className="w-full rounded-xl border border-slate-300 py-2.5 pl-9 pr-3 text-sm outline-none focus:border-slate-900 focus:ring-2 focus:ring-slate-200"
             />
           </div>
@@ -299,7 +298,7 @@ export default function DashboardPage() {
                     <tr key={a.id} className="hover:bg-slate-50">
                       <td className="px-4 py-3">
                         <p className="font-semibold">{a.name}</p>
-                        <p className="text-xs text-slate-500">{a.organization} • Age {a.age ?? "—"}</p>
+                        <p className="text-xs text-slate-500">{a.seat}</p>
                         <p className="font-mono text-[11px] text-slate-400">{a.id}</p>
                       </td>
                       <td className="px-4 py-3">

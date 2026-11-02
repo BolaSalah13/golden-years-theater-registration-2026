@@ -4,13 +4,13 @@ service cloud.firestore {
     // Attendee tickets for the free-tier demo.
     //
     // Current rules: anyone with the project config can create + read
-    // attendees (needed for the public registration form without Auth).
+    // theater_attendees (needed for the public registration form without Auth).
     // Admin scanner/dashboard writes (checkedIn) are also open — acceptable
     // for a small free event, but for stronger security:
     //   1. Enable Firebase Auth (e.g. Email/Password for managers),
     //   2. Replace `if true` on update/delete with `if request.auth != null`,
     //   3. Keep `create` open but validate fields with `request.resource.data`.
-    match /attendees/{attendeeId} {
+    match /theater_attendees/{attendeeId} {
       allow create: if true;
       allow read: if true;
       allow update, delete: if true;
