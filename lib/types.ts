@@ -5,7 +5,7 @@ export interface Attendee {
   name: string;
   email: string;
   phone: string;
-  seat: string;
+  seatNumber: string;
   checkedIn: boolean;
   checkedInAt: Timestamp | null;
   createdAt: Timestamp | null;

@@ -40,7 +40,7 @@ function toCsv(rows: Attendee[]): string {
       a.name,
       a.email,
       a.phone,
-      a.seat,
+      a.seatNumber,
       a.checkedIn ? "TRUE" : "FALSE",
       a.checkedInAt && typeof (a.checkedInAt as unknown as { toDate?: () => Date }).toDate === "function"
         ? (a.checkedInAt as unknown as { toDate: () => Date }).toDate().toISOString()
@@ -116,7 +116,7 @@ export default function DashboardPage() {
       return (
         a.name.toLowerCase().includes(s) ||
         a.email.toLowerCase().includes(s) ||
-        a.seat.toLowerCase().includes(s) ||
+        a.seatNumber.toLowerCase().includes(s) ||
         a.id.toLowerCase().includes(s)
       );
     });
@@ -298,7 +298,7 @@ export default function DashboardPage() {
                     <tr key={a.id} className="hover:bg-slate-50">
                       <td className="px-4 py-3">
                         <p className="font-semibold">{a.name}</p>
-                        <p className="text-xs text-slate-500">{a.seat}</p>
+                        <p className="text-xs text-slate-500">{a.seatNumber}</p>
                         <p className="font-mono text-[11px] text-slate-400">{a.id}</p>
                       </td>
                       <td className="px-4 py-3">

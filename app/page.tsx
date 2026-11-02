@@ -106,7 +106,7 @@ export default function RegistrationPage() {
         const snap = await getDocs(collection(db, THEATER_ATTENDEES_COLLECTION));
         if (cancelled) return;
         const taken = snap.docs
-          .map((d) => (d.data() as Attendee).seat)
+          .map((d) => (d.data() as Attendee).seatNumber)
           .filter((s): s is string => Boolean(s && s.trim()));
         setBookedSeats(Array.from(new Set(taken)));
       } catch (e) {
@@ -148,7 +148,7 @@ export default function RegistrationPage() {
 
       // The chosen seat must still be free.
       const seatSnap = await getDocs(
-        query(col, where("seat", "==", seat), limit(1))
+        query(col, where("seatNumber", "==", seat), limit(1))
       );
       if (!seatSnap.empty) {
         setStatus({
@@ -166,7 +166,7 @@ export default function RegistrationPage() {
         name,
         email: "",
         phone,
-        seat,
+        seatNumber: seat,
         checkedIn: false,
         checkedInAt: null,
         createdAt: serverTimestamp(),

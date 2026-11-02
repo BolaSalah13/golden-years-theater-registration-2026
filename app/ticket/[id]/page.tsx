@@ -113,7 +113,7 @@ export default function TicketPage() {
     ctx.fillText(attendee.name.slice(0, 26), 90, 195);
     ctx.font = "24px system-ui, sans-serif";
     ctx.fillStyle = "#475569";
-    ctx.fillText(attendee.seat.slice(0, 10), 90, 240);
+    ctx.fillText(attendee.seatNumber.slice(0, 10), 90, 240);
     ctx.fillText(attendee.phone.slice(0, 60), 90, 278);
     ctx.font = "22px system-ui, sans-serif";
     ctx.fillStyle = "#334155";
@@ -242,9 +242,9 @@ export default function TicketPage() {
             </p>
             <p className="mt-1 text-2xl font-bold">{attendee.name}</p>
             <dl className="mt-4 space-y-1.5 text-sm">
-              <div className="flex items-baseline gap-2">
-                <dt className="text-xs font-semibold uppercase tracking-wide text-slate-400">Seat Number</dt>
-                <dd className="font-mono text-2xl font-bold">{attendee.seat}</dd>
+              <div className="mt-3 p-2 bg-gray-100 rounded-lg text-center">
+                <span className="text-gray-600 text-sm block">Seat Number</span>
+                <span className="text-2xl font-black text-primary">{attendee.seatNumber}</span>
               </div>
               <div className="flex gap-2">
                 <dt className="w-14 shrink-0 text-slate-400">Phone</dt>

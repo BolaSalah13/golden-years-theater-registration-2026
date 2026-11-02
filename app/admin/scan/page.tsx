@@ -434,7 +434,7 @@ export default function ScanPage() {
                   </p>
                   <p className="mt-1 text-xl font-bold">{result.attendee.name}</p>
                   <p className="text-sm opacity-80">
-                    {[result.attendee.seat, result.attendee.email]
+                    {[result.attendee.seatNumber, result.attendee.email]
                       .filter(Boolean)
                       .join(" • ")}
                   </p>
@@ -509,7 +509,7 @@ export default function ScanPage() {
                   <div className="min-w-0">
                     <p className="truncate text-sm font-semibold">{a.name}</p>
                     <p className="truncate text-xs text-slate-500">
-                      {[a.email, a.seat].filter(Boolean).join(" • ")}
+                      {[a.email, a.seatNumber].filter(Boolean).join(" • ")}
                     </p>
                     <p className="truncate text-xs text-slate-500" dir="ltr">
                       {a.phone}
