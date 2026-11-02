@@ -28,7 +28,7 @@ import { LogoBanner } from "@/components/Logo";
 import { cn } from "@/lib/utils";
 
 const EVENT_NAME =
-  process.env.NEXT_PUBLIC_EVENT_NAME ?? "عملت ايه فينا السنين؟";
+  process.env.NEXT_PUBLIC_EVENT_NAME ?? "مسرحية: عملت ايه فينا السنين؟";
 const EVENT_DATE =
   process.env.NEXT_PUBLIC_EVENT_DATE ?? "الخميس 19 نوفمبر 2026";
 const EVENT_TIME = process.env.NEXT_PUBLIC_EVENT_TIME ?? "6:00 مساءً";
@@ -135,7 +135,7 @@ export default function RegistrationPage() {
     const name = form.name.trim();
     // Normalized: digits only, +20/0020/20 → leading 0 (e.g. 010xxxxxxxx).
     const phone = normalizePhone(form.phone);
-    const seat = form.seat;
+    const seat = form.seat.trim().toUpperCase();
 
     try {
       if (!navigator.onLine) {
@@ -145,21 +145,6 @@ export default function RegistrationPage() {
       }
 
       const col = collection(db, THEATER_ATTENDEES_COLLECTION);
-
-      // No duplicate phone numbers: one registration per phone.
-      const dup = await getDocs(
-        query(col, where("phone", "==", phone), limit(1))
-      );
-      if (!dup.empty) {
-        const existingId = dup.docs[0].id;
-        setStatus({
-          kind: "error",
-          message:
-            "هذا الرقم مسجل بالفعل، لا يمكنك التسجيل أكثر من مرة بنفس الرقم.",
-          existingId,
-        });
-        return;
-      }
 
       // The chosen seat must still be free.
       const seatSnap = await getDocs(
@@ -241,7 +226,7 @@ export default function RegistrationPage() {
             </p>
             <p className="flex gap-2">
               <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-400" />
-              One registration per phone number.
+              Every registration books a seat.
             </p>
           </div>
         </div>

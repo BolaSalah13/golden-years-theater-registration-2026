@@ -19,7 +19,7 @@ import { LogoMark } from "@/components/Logo";
 import { formatTimestamp } from "@/lib/utils";
 
 const EVENT_NAME =
-  process.env.NEXT_PUBLIC_EVENT_NAME ?? "عملت ايه فينا السنين؟";
+  process.env.NEXT_PUBLIC_EVENT_NAME ?? "مسرحية: عملت ايه فينا السنين؟";
 const EVENT_DATE =
   process.env.NEXT_PUBLIC_EVENT_DATE ?? "الخميس 19 نوفمبر 2026";
 const EVENT_TIME = process.env.NEXT_PUBLIC_EVENT_TIME ?? "6:00 مساءً";
@@ -241,8 +241,11 @@ export default function TicketPage() {
               Attendee
             </p>
             <p className="mt-1 text-2xl font-bold">{attendee.name}</p>
-            <p className="text-sm text-slate-500">{attendee.seat}</p>
             <dl className="mt-4 space-y-1.5 text-sm">
+              <div className="flex items-baseline gap-2">
+                <dt className="text-xs font-semibold uppercase tracking-wide text-slate-400">Seat Number</dt>
+                <dd className="font-mono text-2xl font-bold">{attendee.seat}</dd>
+              </div>
               <div className="flex gap-2">
                 <dt className="w-14 shrink-0 text-slate-400">Phone</dt>
                 <dd>{attendee.phone}</dd>

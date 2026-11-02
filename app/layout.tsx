@@ -7,7 +7,7 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 const eventName =
-  process.env.NEXT_PUBLIC_EVENT_NAME ?? "عملت ايه فينا السنين؟";
+  process.env.NEXT_PUBLIC_EVENT_NAME ?? "مسرحية: عملت ايه فينا السنين؟";
 
 export const metadata: Metadata = {
   title: {
