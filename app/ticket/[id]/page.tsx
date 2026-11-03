@@ -112,11 +112,12 @@ export default function TicketPage() {
     ctx.font = "bold 52px system-ui, sans-serif";
     ctx.fillText(attendee.name.slice(0, 26), 90, 195);
     ctx.font = "bold 16px system-ui, sans-serif";
-    ctx.fillStyle = "#ffffff";
+    ctx.fillStyle = "#0f172a";
     ctx.fillText("SEAT NUMBER", 90, 236);
     ctx.font = "24px system-ui, sans-serif";
-    ctx.fillStyle = "#ffffff";
+    ctx.fillStyle = "#14532d";
     ctx.fillText(attendee.seatNumber.slice(0, 10), 90, 266);
+    ctx.fillStyle = "#14532d";
     ctx.fillText(attendee.phone.slice(0, 60), 90, 290);
     ctx.font = "22px system-ui, sans-serif";
     ctx.fillStyle = "#334155";
