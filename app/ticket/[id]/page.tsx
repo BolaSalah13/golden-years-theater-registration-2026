@@ -113,10 +113,10 @@ export default function TicketPage() {
     ctx.fillText(attendee.name.slice(0, 26), 90, 195);
     ctx.font = "bold 16px system-ui, sans-serif";
     ctx.fillStyle = "#0f172a";
-    ctx.fillText("SEAT NUMBER", 90, 218);
+    ctx.fillText("SEAT NUMBER", 90, 236);
     ctx.font = "24px system-ui, sans-serif";
     ctx.fillStyle = "#14532d";
-    ctx.fillText(attendee.seatNumber.slice(0, 10), 90, 244);
+    ctx.fillText(attendee.seatNumber.slice(0, 10), 90, 266);
     ctx.fillText(attendee.phone.slice(0, 60), 90, 278);
     ctx.font = "22px system-ui, sans-serif";
     ctx.fillStyle = "#334155";
