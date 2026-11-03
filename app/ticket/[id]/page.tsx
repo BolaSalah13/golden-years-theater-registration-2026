@@ -117,7 +117,7 @@ export default function TicketPage() {
     ctx.font = "24px system-ui, sans-serif";
     ctx.fillStyle = "#14532d";
     ctx.fillText(attendee.seatNumber.slice(0, 10), 90, 266);
-    ctx.fillText(attendee.phone.slice(0, 60), 90, 278);
+    ctx.fillText(attendee.phone.slice(0, 60), 90, 290);
     ctx.font = "22px system-ui, sans-serif";
     ctx.fillStyle = "#334155";
     ctx.fillText(`${EVENT_DATE}`, 90, 330);
