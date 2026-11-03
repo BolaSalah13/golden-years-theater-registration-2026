@@ -111,8 +111,8 @@ export default function TicketPage() {
     ctx.fillText(EVENT_NAME.toUpperCase(), 90, 130);
     ctx.font = "bold 52px system-ui, sans-serif";
     ctx.fillText(attendee.name.slice(0, 26), 90, 195);
-    ctx.font = "16px system-ui, sans-serif";
-    ctx.fillStyle = "#14532d";
+    ctx.font = "bold 16px system-ui, sans-serif";
+    ctx.fillStyle = "#0f172a";
     ctx.fillText("SEAT NUMBER", 90, 218);
     ctx.font = "24px system-ui, sans-serif";
     ctx.fillStyle = "#14532d";
