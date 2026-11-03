@@ -245,9 +245,14 @@ export default function TicketPage() {
             </p>
             <p className="mt-1 text-2xl font-bold">{attendee.name}</p>
             <dl className="mt-4 space-y-1.5 text-sm">
-              <div className="mt-3 p-2 bg-gray-100 rounded-lg text-center">
-                <span className="text-gray-600 text-sm block">Seat Number</span>
-                <span className="text-2xl font-black text-primary">{attendee.seatNumber}</span>
+              {/* صندوق رقم المقعد المنظم */}
+              <div className="bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-700/50 rounded-2xl p-4 text-center my-4 shadow-sm">
+                <p className="text-xs uppercase tracking-wider text-gray-500 dark:text-gray-400 font-medium mb-1">
+                  Seat Number
+                </p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white tracking-wide">
+                  {attendee.seatNumber}
+                </p>
               </div>
               <div className="flex gap-2">
                 <dt className="w-14 shrink-0 text-slate-400">Phone</dt>

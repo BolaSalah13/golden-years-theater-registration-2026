@@ -33,12 +33,17 @@ import { cn } from "@/lib/utils";
 type StatusFilter = "all" | "checked-in" | "pending";
 
 function toCsv(rows: Attendee[]): string {
-  const header = ["Name", "Phone Number", "Seat Number"];
+  const header = ["id", "checkedIn", "checkedInAt", "createdAt"];
   const lines = rows.map((a) =>
     [
-      a.name,
-      a.phone,
-      a.seatNumber,
+      a.id,
+      a.checkedIn ? "TRUE" : "FALSE",
+      a.checkedInAt && typeof (a.checkedInAt as unknown as { toDate?: () => Date }).toDate === "function"
+        ? (a.checkedInAt as unknown as { toDate: () => Date }).toDate().toISOString()
+        : "",
+      a.createdAt && typeof (a.createdAt as unknown as { toDate?: () => Date }).toDate === "function"
+        ? (a.createdAt as unknown as { toDate: () => Date }).toDate().toISOString()
+        : "",
     ]
       .map(csvEscape)
       .join(",")
