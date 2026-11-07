@@ -61,7 +61,7 @@ Collection `theater_attendees`, document ID = `attendeeId`:
 
 - Event: مسرحية "عملت ايه فينا السنين؟"
 - Date: الخميس 19 نوفمبر 2026
-- Time: 6:00 مساءً
+- Time: 7:00 مساءً
 - Venue: مسرح سان جورج للأقباط الكاثوليك - مصر الجديدة | St. Georges Coptic Catholic Theater - Heliopolis
 
 ## Optional: admin passcodes (separate roles)

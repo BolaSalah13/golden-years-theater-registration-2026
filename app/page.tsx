@@ -31,7 +31,7 @@ const EVENT_NAME =
   process.env.NEXT_PUBLIC_EVENT_NAME ?? "مسرحية: عملت ايه فينا السنين؟";
 const EVENT_DATE =
   process.env.NEXT_PUBLIC_EVENT_DATE ?? "الخميس 19 نوفمبر 2026";
-const EVENT_TIME = process.env.NEXT_PUBLIC_EVENT_TIME ?? "6:00 مساءً";
+const EVENT_TIME = process.env.NEXT_PUBLIC_EVENT_TIME ?? "7:00 مساءً";
 const EVENT_VENUE =
   process.env.NEXT_PUBLIC_EVENT_VENUE ??
   "مسرح سان جورج للأقباط الكاثوليك - مصر الجديدة | St. Georges Coptic Catholic Theater - Heliopolis";
